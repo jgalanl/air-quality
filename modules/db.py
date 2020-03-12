@@ -1,10 +1,16 @@
-from firebase import firebase
+import pyrebase
+import json
 from datetime import date
+
+with open('config.json') as config_file:
+    firebaseConfig = json.load(config_file)
+
+firebase = pyrebase.initialize_app(firebaseConfig)
+
+db = firebase.database()
 
 def insert(temperature, pressure, humidity, gas_resistance):
     try:
-        firebase_api = firebase.FirebaseApplication('https://air-quality-2ab4d.firebaseio.com/', None)
-
         data = {
             "Date": {
                 "day": date.today().strftime("%H:%M:%S, %d/%m/%Y")
@@ -17,8 +23,7 @@ def insert(temperature, pressure, humidity, gas_resistance):
             }
         }
         
-        result = firebase_api.post('/Raspberry/00000000a44b23f9', data)
-        print(result)
+        db.child("/Raspberry/00000000a44b23f9").push(data)
 
     except Exception as exc:
         print(exc)
