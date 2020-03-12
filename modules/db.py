@@ -17,7 +17,8 @@ def insert(temperature, pressure, humidity, gas_resistance):
             }
         }
         
-        firebase_api.post('/Raspberry/00000000a44b23f9', data)
+        result = firebase_api.post('/Raspberry/00000000a44b23f9', data)
+        print(result)
 
     except Exception as exc:
         print(exc)

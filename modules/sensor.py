@@ -1,5 +1,7 @@
 import bme680
 import time
+import sys
+
 from db import insert
 
 try:
@@ -42,6 +44,10 @@ try:
         if sensor.get_sensor_data():
             print(sensor.data.temperature, sensor.data.pressure,
             sensor.data.humidity, sensor.data.gas_resistance)
+            insert(sensor.data.temperature, sensor.data.pressure,
+            sensor.data.humidity, sensor.data.gas_resistance)
+
+
             # insert...
             # output = '{0:.2f} C,{1:.2f} hPa,{2:.2f} %RH'.format(
             #     sensor.data.temperature,
@@ -56,7 +62,7 @@ try:
             # else:
             #     print(output)
 
-        time.sleep(1)
+        time.sleep(10)
 
 except KeyboardInterrupt:
     pass
