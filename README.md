@@ -18,12 +18,12 @@ pip3 install -r requirements.txt
 ```
 
 ## TODO
-* Extraer la información de la base de datos
-* Entrenar el modelo
-* Hacer predicciones
-* Controlar el error y mejorarlo
+* Extraer la información de la base de datos.
+* Entrenar el modelo.
+* Hacer predicciones.
+* Controlar el error y mejorarlo.
 
 ## Hecho con
 
-* [Python]
-* [Firebase]
+* Python
+* Firebase
