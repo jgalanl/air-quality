@@ -1,8 +1,8 @@
 import pyrebase
 import json
-from datetime import date
+from datetime import datetime
 
-with open('config.json') as config_file:
+with open('../config.json') as config_file:
     firebaseConfig = json.load(config_file)
 
 firebase = pyrebase.initialize_app(firebaseConfig)
@@ -13,7 +13,7 @@ def insert(temperature, pressure, humidity, gas_resistance):
     try:
         data = {
             "Date": {
-                "day": date.today().strftime("%H:%M:%S, %d/%m/%Y")
+                "day": datetime.now().strftime("%d/%m/%Y, %H:%M:%S")
             },
             "Data": {
                 "temperature": temperature,
