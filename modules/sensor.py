@@ -14,13 +14,9 @@ except IOError:
 def read_data():
     print('\n\nIniciando lectura:')
     try:
-        while True:
-            if sensor.get_sensor_data():
-                print(sensor.data.temperature, sensor.data.pressure,
-                sensor.data.humidity, sensor.data.gas_resistance)
-                insert(sensor.data.temperature, sensor.data.pressure,
-                sensor.data.humidity, sensor.data.gas_resistance)
-
+        if sensor.get_sensor_data():
+            insert(sensor.data.temperature, sensor.data.pressure, 
+            sensor.data.humidity, sensor.data.gas_resistance)
     except KeyboardInterrupt:
         pass
 
