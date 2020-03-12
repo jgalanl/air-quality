@@ -1,5 +1,8 @@
+#!/usr/bin/env python3
+
 import os
 import time
 
-os.system('python sensor.py')
-time.sleep(10)
+while True:
+    os.system('python3 sensor.py')
+    time.sleep(10)

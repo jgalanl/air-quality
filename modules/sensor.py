@@ -12,11 +12,12 @@ except IOError:
     sensor = bme680.BME680(bme680.I2C_ADDR_SECONDARY)
 
 def read_data():
-    print('\n\nIniciando lectura:')
+    print('\n\nIniciando lectura...:')
     try:
         if sensor.get_sensor_data():
             insert(sensor.data.temperature, sensor.data.pressure, 
             sensor.data.humidity, sensor.data.gas_resistance)
+            print("Lectura finalizada!")
     except KeyboardInterrupt:
         pass
 
