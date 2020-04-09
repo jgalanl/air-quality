@@ -4,7 +4,7 @@ import pyrebase
 import json
 from datetime import datetime
 
-with open('../config.json') as config_file:
+with open('config.json') as config_file:
     firebaseConfig = json.load(config_file)
 
 firebase = pyrebase.initialize_app(firebaseConfig)
@@ -29,3 +29,12 @@ def insert(temperature, pressure, humidity, gas_resistance):
 
     except Exception as exc:
         print(exc)
+
+def extract():
+    try:
+        result = db.child("/Raspberry/00000000a44b23f9/-M2EFIm_YeOg1fSv-XU4").get()
+    
+    except Exception as exc:
+        print(exc)
+
+    return result
