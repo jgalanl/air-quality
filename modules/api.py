@@ -5,8 +5,6 @@ def get_api():
     if resp.status_code != 200:
         # This means something went wrong.
         raise ApiError('Error GET /tasks/ {}'.format(resp.status_code))
-    # for item in resp.json():
-        # print('{} {}'.format(item['id'], item['summary']))
     return resp.json()
 
 if __name__ == "__main__":

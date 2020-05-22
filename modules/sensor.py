@@ -15,9 +15,19 @@ def read_data():
     print('\n\nIniciando lectura...:')
     try:
         if sensor.get_sensor_data():
-            insert(sensor.data.temperature, sensor.data.pressure, 
-            sensor.data.humidity, sensor.data.gas_resistance)
+            # insert(sensor.data.temperature, sensor.data.pressure, 
+            # sensor.data.humidity, sensor.data.gas_resistance)
+
+            data = {
+                "Data": {
+                    "temperature": sensor.data.temperature,
+                    "pressure": sensor.data.pressure,
+                    "humidity": sensor.data.humidity,
+                    "gas_resistance": sensor.data.gas_resistance
+                }
+            }
             print("Lectura finalizada!")
+            return data
     except KeyboardInterrupt:
         pass
 
