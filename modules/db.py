@@ -1,3 +1,5 @@
+#!/usr/bin python3
+
 import pyrebase
 import json
 from datetime import datetime

@@ -1,3 +1,5 @@
+#!/usr/bin python3
+
 import time
 from sensor import read_data
 from api import get_api
