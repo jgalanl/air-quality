@@ -40,7 +40,7 @@ def getGasScore():
     return float(gas_score)
 
 def calculateIAQ(score):
-    score = (100 - score) * 5
+    score = int((100 - score) * 5)
     if score >= 301:
         return 5
     elif score >= 201 and score <= 300:
