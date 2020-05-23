@@ -13,7 +13,7 @@ if __name__ == "__main__":
         # Llamar al read_data del sensor
         read_data()
         
-        time.sleep(3600)
+        # time.sleep(3600) No hace falta. utilizar Crontab
 
     # TODO Llamar a la clase predictive para realizar la predicción del modelo
 
