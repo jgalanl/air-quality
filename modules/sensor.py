@@ -19,7 +19,6 @@ gas_lower_limit = 10000
 gas_upper_limit = 300000
 
 def getHumidityScore():
-    humidity_score = 0
     current_humidity = sensor.data.humidity
     if current_humidity >= 38 and current_humidity <= 42:
         humidity_score = 0.25 * 100
@@ -29,16 +28,17 @@ def getHumidityScore():
         else:
             humidity_score = ((-0.25 / (100 - hum_reference) * current_humidity) + 0.416666) * 100
 
-    return humidity_score
+    return float(humidity_score)
 
 def getGasScore():
-    gas_score = 0
     gas_score = (0.75 / (gas_upper_limit - gas_lower_limit) * gas_reference - (gas_lower_limit * (0.75 / (gas_upper_limit - gas_lower_limit)))) * 100.00
+    
     if (gas_score > 75):
         gas_score = 75
     if (gas_score < 0):
         gas_score = 0
-    return gas_score
+    
+    return float(gas_score)
 
 def calculateIAQ(score):
     score = (100 - score) * 5
