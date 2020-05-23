@@ -2,7 +2,7 @@ import pyrebase
 import json
 from datetime import datetime
 
-with open('config.json') as config_file:
+with open('../config.json') as config_file:
     firebaseConfig = json.load(config_file)
 
 firebase = pyrebase.initialize_app(firebaseConfig)
