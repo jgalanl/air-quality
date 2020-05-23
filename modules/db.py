@@ -54,9 +54,9 @@ def insert_api(date_api, data_api, weather_api):
     except Exception as exc:
         print(exc)
 
-def extract():
+def extract_all_data():
     try:
-        result = db.child("/Raspberry/00000000a44b23f9/-M2EFIm_YeOg1fSv-XU4").get()
+        result = db.child("/Raspberry").get()
     
     except Exception as exc:
         print(exc)
