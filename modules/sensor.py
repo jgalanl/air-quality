@@ -12,21 +12,20 @@ except IOError:
 hum_weighting = 0.25
 gas_weighting = 0.75
 
-gas_reference = 2500
-hum_reference = 40
-getgasreference_count = 0
-gas_lower_limit = 10000
-gas_upper_limit = 300000
+gas_reference = 2500.00
+hum_reference = 40.00
+gas_lower_limit = 10000.00
+gas_upper_limit = 300000.00
 
 def getHumidityScore():
-    current_humidity = sensor.data.humidity
-    if current_humidity >= 38 and current_humidity <= 42:
-        humidity_score = 0.25 * 100
+    current_humidity = float(sensor.data.humidity)
+    if current_humidity >= 38.00 and current_humidity <= 42.00:
+        humidity_score = 0.25 * 100.00
     else:
-        if current_humidity < 38:
-            humidity_score = 0,25 / hum_reference * current_humidity * 100
+        if current_humidity < 38.00:
+            humidity_score = 0.25 / hum_reference * current_humidity * 100.00
         else:
-            humidity_score = ((-0.25 / (100 - hum_reference) * current_humidity) + 0.416666) * 100
+            humidity_score = float(((-0.25 / (100.00 - hum_reference) * current_humidity) + 0.416666) * 100.00)
 
     return float(humidity_score)
 
