@@ -21,6 +21,8 @@ def insert_sensor(temperature, pressure, humidity, gas_resistance, air_quality_s
             "air_quality_score": air_quality_score,
             "iaq_class": iaq_class
         }
+
+        print(date)
         
         db.child("/Raspberry/" + date).update(data)
 
