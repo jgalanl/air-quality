@@ -1,3 +1,4 @@
 dsienv
 .vscode
 config.json
+modules/auth.py

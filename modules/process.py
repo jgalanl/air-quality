@@ -1,17 +1,18 @@
-#!/usr/bin/env python3
-
-from db import extract
-
-def get_data():
-    print("--- INICIANDO EXTRACCIÓN DE DATOS ---")
-    try:
-        result = extract()
-
-    except Exception as exc:
-        print(exc)
-
-    print(result.val())
-    print("--- EXTRACCIÓN DE DATOS CORRECTA")
+import json
+from sensor import read_data
+from api import get_api
 
 if __name__ == "__main__":
-    get_data()
+    print('\n--- INICIO DE EJECUCCIÓN ---')
+
+    # 1º llamamos a la Weather API
+    get_api()
+
+    # Llamar al read_data del sensor
+    read_data()
+
+    # TODO Llamar a la clase predictive para realizar la predicción del modelo
+
+    #while True:
+    #os.system('python3 sensor.py')
+    #time.sleep(3600)

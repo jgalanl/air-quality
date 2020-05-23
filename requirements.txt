@@ -1,3 +1,5 @@
 request
 pyrebase4
 bme680
+python-telegram-bot
+spacy
