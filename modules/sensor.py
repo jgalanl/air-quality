@@ -69,6 +69,6 @@ def read_data():
             air_quality_score, iaq_class)
             
             print("Lectura finalizada!")
-            return data
+            
     except KeyboardInterrupt:
         pass
