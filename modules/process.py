@@ -15,8 +15,6 @@ if __name__ == "__main__":
         
         time.sleep(3600)
 
-   
-
     # TODO Llamar a la clase predictive para realizar la predicción del modelo
 
     
