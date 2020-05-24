@@ -7,16 +7,16 @@ from sklearn.naive_bayes import GaussianNB
 
 from db import extract_all_data, insert_predicted
 
-def decision_tree(train_data, target, test_data):
-    clf = tree.DecisionTreeClassifier()
-    clf = clf.fit(train_data, target)
+def naive_bayes(train_data, target, test_data):
+    gnb = GaussianNB()
+    gnb = gnb.fit(train_data, target)
     # r = tree.export_text(clf, feature_names=wine['feature_names'])
     # dot_data = tree.export_graphviz(clf, out_file=None)
     # graph = graphviz.Source(dot_data) 
     # graph.render("wine") 
     # print(r)
 
-    predicted = clf.predict(test_data)
+    predicted = gnb.predict(test_data)
 
     return predicted
     # score = clf.score(test_data, test_target)
@@ -63,7 +63,8 @@ def predict():
       
     # Realizar predicción
     # train_data = train_test_split(train_data, target, train_size= 1, random_state=0)
-    predicted = decision_tree(train_data, target, test_data)
+    predicted = naive_bayes(train_data, target, test_data)
+    print(predicted)
 
     # Recorrer lista de dates e ir insertando su valor de predicted en la base de datos
     for idx, date in enumerate(dates):
