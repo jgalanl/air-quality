@@ -54,6 +54,18 @@ def insert_api(date_api, data_api, weather_api):
     except Exception as exc:
         print(exc)
 
+def insert_predicted(date, air_quality_predicted):
+    try:
+
+        data = {
+            "air_quality_predicted": air_quality_predicted
+        }
+        
+        db.child("/Raspberry/" + date).update(data)
+
+    except Exception as exc:
+        print(exc)
+
 def extract_all_data():
     try:
         result = db.child("/Raspberry").get()

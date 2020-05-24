@@ -5,7 +5,7 @@ from sklearn import tree
 from sklearn.metrics import confusion_matrix 
 from sklearn.naive_bayes import GaussianNB
 
-from db import extract_all_data
+from db import extract_all_data, insert_predicted
 
 def decision_tree(train_data, target, test_data):
     clf = tree.DecisionTreeClassifier()
@@ -36,22 +36,18 @@ def predict():
     result = extract_all_data()
     total_data = result.val()
 
-    # De lo extraido generamos 2 conjuntos: 1 con el target (IAQ class) y 1 con el data
+    # De lo extraido generamos 3 conjuntos: 1 con el target (Air Quality Score) y 2 con el data
+        ## 1 conjunto data de entrenamiento: train data. Tiene el atributo air_quality_score
+        ## 1 conjunto data de test: test data: No tienen el air_quality_score
     target = []
     train_data = []
     test_data = []
     dates = []
 
     for date in total_data:
-        # print(date)
         daily_data = total_data[date]
         for hour in daily_data:
-            # print(hour)
-            hourly_data = daily_data[hour]
-
-            # total data -> todo lo que hay en la base de datos
-            # conjunto de entrenamiento: train data. Tiene el atributo air_quality_score
-            # conjunto de test: predicted data: No tengan el air_quality_score
+            hourly_data = daily_data[hour]            
 
             if 'air_quality_score' in hourly_data:
                 target.append(int(hourly_data["air_quality_score"]))
@@ -69,13 +65,9 @@ def predict():
     # train_data = train_test_split(train_data, target, train_size= 1, random_state=0)
     predicted = decision_tree(train_data, target, test_data)
 
-    print(len(dates))
-    print(len(predicted))
-
-    # Recorrer lista de dates e ir insertando su valor de predicted en la base de datos - air_quality_predicted
-
-
-    # Almacenar el resultado del predicted en Firebase dentro de su fecha y hora
+    # Recorrer lista de dates e ir insertando su valor de predicted en la base de datos
+    for idx, date in enumerate(dates):
+        insert_predicted(date[0], float(predicted[idx]))
 
 if __name__ == "__main__":
     predict()

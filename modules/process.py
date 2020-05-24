@@ -12,7 +12,5 @@ if __name__ == "__main__":
     get_api()
     # Llamar al read_data del sensor
     read_data()
-
     # TODO Llamar a la clase predictive para realizar la predicción del modelo
-
-    
+     
