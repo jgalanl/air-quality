@@ -36,11 +36,11 @@ def insert_api(date_api, data_api, weather_api):
 
         data = {
             "date": date_api,
-            "temperature": "{:.1f}".format(data_api["temp"]),
-            "feels_like": "{:.1f}".format(data_api["temp"]),
+            "temperature": data_api["temp"],
+            "feels_like": data_api["temp"],
             "pressure": data_api["pressure"],
             "humidity": data_api["humidity"],
-            "dew_point": "{:.1f}".format(data_api["temp"]),
+            "dew_point": data_api["temp"],
             "clouds": data_api["clouds"],
             "wind_speed": data_api["wind_speed"],
             "wind_deg": data_api["wind_deg"],
