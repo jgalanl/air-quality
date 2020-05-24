@@ -7,7 +7,7 @@ from sklearn.naive_bayes import GaussianNB
 
 from db import extract_all_data, insert_predicted
 
-def naive_bayes(train_data, target, test_data):
+def naive_bayes(train_data, target, test_data, air_quality_score, air_quality_predicted):
     gnb = GaussianNB()
     gnb = gnb.fit(train_data, target)
     # r = tree.export_text(clf, feature_names=wine['feature_names'])
@@ -17,16 +17,15 @@ def naive_bayes(train_data, target, test_data):
     # print(r)
 
     predicted = gnb.predict(test_data)
+    score = gnb.score(air_quality_score, air_quality_predicted)
 
-    return predicted
-    # score = clf.score(test_data, test_target)
+    print("## Naive Bayes \n")
 
-    # print("## Árbol de decisión \n")
-
-    # print("Score: ", "{:.4f}".format(score))
+    print("Score: ", "{:.4f}".format(score))
     # print("Expected: ", test_target)
     # print("Predicted: ", predicted)
 
+    return predicted
     # Evaluar el resultado generando una matriz de confusión. Calcular la precision, exactitud y sensibilidad para cada clase
     # cnf_matrix = confusion_matrix(test_target, predicted)
     # print("Confusion matrix: \n", cnf_matrix)
@@ -43,6 +42,8 @@ def predict():
     train_data = []
     test_data = []
     dates = []
+    air_quality_score = []
+    air_quality_predicted = []
 
     for date in total_data:
         daily_data = total_data[date]
@@ -60,11 +61,14 @@ def predict():
                     hourly_data["pressure"], hourly_data["temperature"], hourly_data["wind_deg"], hourly_data["wind_speed"]])
                 
                 dates.append([hourly_data["date"]])
+
+            if 'air_quality_score' in hourly_data and 'air_quality_predicted' in hourly_data:
+                air_quality_score.append([hourly_data["air_quality_score"]])
+                air_quality_predicted.append([hourly_data["air_quality_predicted"]])
       
     # Realizar predicción
     # train_data = train_test_split(train_data, target, train_size= 1, random_state=0)
-    predicted = naive_bayes(train_data, target, test_data)
-    print(predicted)
+    predicted = naive_bayes(train_data, target, test_data, air_quality_score, air_quality_predicted)
 
     # Recorrer lista de dates e ir insertando su valor de predicted en la base de datos
     for idx, date in enumerate(dates):
