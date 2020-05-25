@@ -1,4 +1,5 @@
 import logging
+import datetime
 
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
@@ -6,25 +7,28 @@ from auth import token
 
 from db import extract_date, extract_list
 
+import spacy
+nlp = spacy.load("es_core_news_md")
+
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 
 logger = logging.getLogger(__name__)
 
-def get_calidad(air_quality_predicted):
+def get_calidad_recomendacion(air_quality_predicted):
     if air_quality_predicted >= 301:
-        return 'nociva'
+        return 'nociva', 'El aire estará irrespirable. Yo no saldría de casa'
     elif air_quality_predicted >= 201 and air_quality_predicted <= 300:
-        return 'muy mala'
+        return 'muy mala', 'La calidad del aire será muy mala. No salgas de casa salvo que sea necesario'
     elif air_quality_predicted >= 151 and air_quality_predicted <= 200:
-        return 'mala'
+        return 'mala', 'En caso de salir al exterior utiliza una mascarilla'
     elif air_quality_predicted >= 101 and air_quality_predicted <= 150:
-        return 'mala'
+        return 'mala', 'Hay bastante contaminación. Procura no estar mucho tiempo fuera'
     elif air_quality_predicted >= 51 and air_quality_predicted <= 100:
-        return 'media'
+        return 'media', 'Habrá un poco de contaminación pero se puede salir de casa'
     elif air_quality_predicted >= 0 and air_quality_predicted <= 50:
-        return 'buena'
+        return 'buena', 'No habrá ni pizca de contaminación'
 
 def start(update, context):
     message = """¡Encantado de conocerte! ¿Qué puedo hacer por ti? \n
@@ -33,7 +37,6 @@ def start(update, context):
     /help. Ayuda sobre cómo hablar conmigo. 
     """
     
-    # Para conocer la calidad del aire introduce el comando /air seguido de la fecha en formato dd-mm'
     update.message.reply_text(message)
 
 def air(update, context):
@@ -49,34 +52,15 @@ def air(update, context):
         result = extract_date(hour, date)
 
         if result is None:
-            update.message.reply_text("""Aún no tengo información sobre la fecha que me has dicho. Prueba dentro de unos días.""")
+            update.message.reply_text("Aún no tengo información sobre la fecha que me has dicho. Prueba dentro de unos días.")
             return
 
         air_quality_predicted = result['air_quality_predicted']
+        temperature = result['temperature']
 
-        calidad = ''
-        recomendacion = ''
+        calidad, recomendacion = get_calidad_recomendacion(air_quality_predicted)
 
-        if air_quality_predicted >= 301:
-            calidad = 'nociva'
-            recomendacion = 'El aire estará irrespirable. Yo no saldría de casa...'
-        elif air_quality_predicted >= 201 and air_quality_predicted <= 300:
-            calidad = 'muy mala'
-            recomendacion = 'La calidad del aire será muy mala. No salgas de casa salvo que sea necesario.'
-        elif air_quality_predicted >= 151 and air_quality_predicted <= 200:
-            calidad = 'mala'
-            recomendacion = 'En caso de salir al exterior utiliza una mascarilla.'
-        elif air_quality_predicted >= 101 and air_quality_predicted <= 150:
-            calidad = 'mala'
-            recomendacion = 'Hay bastante contaminación. Procura no estar mucho tiempo fuera.'
-        elif air_quality_predicted >= 51 and air_quality_predicted <= 100:
-            calidad = 'media'
-            recomendacion = 'Habrá un poco de contaminación pero se puede salir de casa.'
-        elif air_quality_predicted >= 0 and air_quality_predicted <= 50:
-            calidad = 'buena'
-            recomendacion = 'No habrá ni pizca de contaminación.'
-
-        message = 'La calidad del aire será de {}, {}. {}'.format(air_quality_predicted, calidad, recomendacion)
+        message = 'La calidad del aire será de {}, {}, con una temperatura de {}°C. {}.'.format(air_quality_predicted, calidad, temperature, recomendacion)
        
         update.message.reply_text(message)
 
@@ -89,15 +73,17 @@ def list(update, context):
 
         result = extract_list(date)
         if result is None:
-            update.message.reply_text('No te he entendido')
+            update.message.reply_text("Aún no tengo información sobre la fecha que me has dicho. Prueba dentro de unos días.")
             return
 
         message = 'Estas son las horas con menos contaminación para ese día: \n'
         for i in result:
             hour = i['date'].split('/')[1]
             air_quality_predicted = i['air_quality_predicted']
-            calidad = get_calidad(air_quality_predicted)
-            string = '{}. Nivel: {}, {}. \n'.format(hour, air_quality_predicted, calidad)
+            calidad, recomendacion = get_calidad_recomendacion(air_quality_predicted)
+            temperature = i['temperature']
+            description = i['description']
+            string = '{}. Nivel: {}, {}. Temperatura: {}°C. Pronóstico: {}. Recomendación: {}. \n'.format(hour, air_quality_predicted, calidad, temperature, description, recomendacion)
             message += string
 
         update.message.reply_text(message)
@@ -107,13 +93,129 @@ def list(update, context):
 
 
 def help(update, context):
-    """Send a message when the command /help is issued."""
-    update.message.reply_text('Help!')
+    message = """ ¿En qué puedo ayudarte? \n
+    /air hh:mm dd-MM. Conocer la calidad del aire un momento concreto. Ejemplo: /air 13:00 26-05
+    /list dd-MM. Conocer las horas con mejor calidad del aire. Ejemplo: /list 26-05
+    /help. Ayuda sobre cómo hablar conmigo. 
+    """
+
+    update.message.reply_text(message)
 
 
 def echo(update, context):
-    """Echo the user message."""
-    update.message.reply_text(update.message.text)
+    message = ''
+    document = nlp(update.message.text)
+
+    # Comprobar intents
+    # Extraer advervios, nombres y numeros
+    noum = []
+    adv = ''
+    num = []
+    for s in document.sents:
+        for token in s:
+            if token.tag_ == 'ADV___':
+                adv = token.orth_
+            if token.tag_ == 'NOUN__AdvType=Tim' or token.tag_ == "NUM__NumForm=Digit|NumType=Card":
+                num.append(token.orth_)
+            if token.pos_ =="NOUN":
+                noum.append(token.orth_.lower())
+
+    if "gracias" in noum:
+        message = "¡De nada! Espero acertar más que el hombre del tiempo."
+        update.message.reply_text(message)
+        
+        return
+
+    # Obtener nombres propios o de ciudades
+    if document.ents is not None:
+        if not 'leganés' in str(document.ents).lower() and len(document.ents) > 1:
+            message = 'De momento solo conozco Leganés, culpa de mis creadores. ¡Lo siento!'
+            update.message.reply_text(message)
+            return
+
+    if 'hoy' in adv and len(num) == 0:
+        date = '{}-0{}'.format(datetime.datetime.today().day, datetime.datetime.today().month)
+        result = extract_list(date)
+        if result is None:
+            update.message.reply_text("Aún no tengo información sobre la fecha que me has dicho. Prueba dentro de unos días.")
+            return
+
+        message = 'Estas son las horas con menos contaminación para ese día: \n'
+        for i in result:
+            hour = i['date'].split('/')[1]
+            air_quality_predicted = i['air_quality_predicted']
+            calidad, recomendacion = get_calidad_recomendacion(air_quality_predicted)
+            temperature = i['temperature']
+            description = i['description']
+            string = '{}. Nivel: {}, {}. Temperatura: {}°C. Pronóstico: {}. {}.\n'.format(hour, air_quality_predicted, calidad, temperature, description, recomendacion)
+            message += string
+
+        update.message.reply_text(message)
+        
+        return 
+    
+    elif 'hoy' in adv and len(num) > 0:
+        date = '{}-0{}'.format(datetime.datetime.today().day, datetime.datetime.today().month)
+        hour = num[0].replace('/','-')
+        result = extract_date(hour, date)
+        if result is None:
+            update.message.reply_text("Aún no tengo información sobre la fecha que me has dicho. Prueba dentro de unos días.")
+            return
+        
+        air_quality_predicted = result['air_quality_predicted']
+        temperature = result['temperature']
+
+        calidad, recomendacion = get_calidad_recomendacion(air_quality_predicted)
+
+        message = 'La calidad del aire será de {}, {}, con una temperatura de {}°C. {}.'.format(air_quality_predicted, calidad, temperature, recomendacion)
+        
+        update.message.reply_text(message)
+        
+        return
+    
+    else:
+        if not adv and len(num) == 1:
+            date = num[0].replace('/', '-')
+            result = extract_list(date)
+            if result is None:
+                update.message.reply_text("Aún no tengo información sobre la fecha que me has dicho. Prueba dentro de unos días.")
+                return
+
+            message = 'Estas son las horas con menos contaminación para ese día: \n'
+            for i in result:
+                hour = i['date'].split('/')[1]
+                air_quality_predicted = i['air_quality_predicted']
+                calidad, recomendacion = get_calidad_recomendacion(air_quality_predicted)
+                temperature = i['temperature']
+                description = i['description']
+                string = '{}. Nivel: {}, {}. Temperatura: {}°C. Pronóstico: {}. {}.\n'.format(hour, air_quality_predicted, calidad, temperature, description, recomendacion)
+                message += string
+
+            update.message.reply_text(message)
+            
+            return
+
+        elif not adv and len(num) == 2:
+            date = num[0].replace('/', '-')
+            hour = num[1]
+
+            result = extract_date(hour, date)
+
+            if result is None:
+                update.message.reply_text("Aún no tengo información sobre la fecha que me has dicho. Prueba dentro de unos días.")
+                return
+
+            air_quality_predicted = result['air_quality_predicted']
+            temperature = result['temperature']
+
+            calidad, recomendacion = get_calidad_recomendacion(air_quality_predicted)
+
+            message = 'La calidad del aire será de {}, {}, con una temperatura de {}°C. {}.'.format(air_quality_predicted, calidad, temperature, recomendacion)
+            update.message.reply_text(message)
+
+            return
+
+    update.message.reply_text('No te he entendido.')
 
 
 def error(update, context):
@@ -124,8 +226,6 @@ def error(update, context):
 def main():
     """Start the bot."""
     # Create the Updater and pass it your bot's token.
-    # Make sure to set use_context=True to use the new context based callbacks
-    # Post version 12 this will no longer be necessary
     updater = Updater(token, use_context=True)
 
     # Get the dispatcher to register handlers
@@ -146,9 +246,6 @@ def main():
     # Start the Bot
     updater.start_polling()
 
-    # Run the bot until you press Ctrl-C or the process receives SIGINT,
-    # SIGTERM or SIGABRT. This should be used most of the time, since
-    # start_polling() is non-blocking and will stop the bot gracefully.
     updater.idle()
 
 

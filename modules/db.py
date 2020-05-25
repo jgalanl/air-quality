@@ -94,7 +94,7 @@ def extract_list(date):
 
         data.sort(key=lambda x: x.get('air_quality_predicted'))
 
-        return data
+        return data[:5]
 
     except Exception as exc:
         print(exc)
