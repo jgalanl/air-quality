@@ -69,6 +69,3 @@ def predict():
     # Recorrer lista de dates e ir insertando su valor de predicted en la base de datos
     for idx, date in enumerate(dates):
         insert_predicted(date[0], float(predicted[idx]))
-
-if __name__ == "__main__":
-    predict()

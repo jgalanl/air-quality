@@ -2,3 +2,4 @@ dsienv
 .vscode
 config.json
 modules/auth.py
+modules/__pycache__

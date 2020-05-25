@@ -78,20 +78,26 @@ def extract_all_data():
 def extract_date(hour, date):
     try:
         result = db.child("/Raspberry/"+date+"/"+"/"+hour).get()
-        # for i in result.each():
-        #     print(i.key())
-        #     print(i.val())
-
+        
         return result.val()
         
     except Exception as exc:
         print(exc)
 
-def extract_dates(date):
+def extract_list(date):
     try:
-        result = db.child()
+        result = db.child("/Raspberry/"+date).get()
+
+        data = []
+        for i in result.each():
+            data.append(i.val())
+
+        data.sort(key=lambda x: x.get('air_quality_predicted'))
+
+        return data
+
     except Exception as exc:
         print(exc)
 
 if __name__ == "__main__":
-    print(extract_date('21:00', '22-05'))
+    print(extract_list('25-05'))
