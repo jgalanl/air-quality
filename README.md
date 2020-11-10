@@ -17,12 +17,6 @@ Para instalar las librerias, que están en el archivo requirements.txt, se tiene
 pip3 install -r requirements.txt
 ```
 
-## TODO
-* Extraer la información de la base de datos.
-* Entrenar el modelo.
-* Hacer predicciones.
-* Controlar el error y mejorarlo.
-
 ## Hecho con
 
 * Python
